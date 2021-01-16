@@ -112,7 +112,7 @@ class WSClient(websocket.WebSocketApp):
             )
 
 
-    def _open_handler(self, ws):
+    def _open_handler(self):
         self.conditional.acquire()
         self.connected = True
         self.conditional.notifyAll()
@@ -122,14 +122,14 @@ class WSClient(websocket.WebSocketApp):
             self.open_handler(self)
 
 
-    def _err_handler(self, ws, error):
+    def _err_handler(self, error):
         if self.err_handler is not None:
             self.err_handler(self, error)
         else:
             raise ConnectionError("Connection to %s failed: %s"%(self.url, error))
 
 
-    def _msg_handler(self, ws, message):
+    def _msg_handler(self, message):
         if not self.auth_complete:
             body = json.loads(message)
             self._body_scan(body)
