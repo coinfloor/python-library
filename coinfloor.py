@@ -140,15 +140,15 @@ class WSClient(websocket.WebSocketApp):
 
     def _process_welcome_message(self, body):
         if "nonce" not in body:
-            self._err_handler(self, "Invalid 'Welcome' message received")
+            self._err_handler("Invalid 'Welcome' message received")
         elif self.server_nonce is not None:
-            self._err_handler(self, "Server nonce received more than once")
+            self._err_handler("Server nonce received more than once")
         else:
             try:
                 self.conditional.acquire()
                 self.server_nonce = base64.b64decode(body["nonce"])
             except TypeError:
-                self._err_handler(self, "Server nonce received is invalid")
+                self._err_handler("Server nonce received is invalid")
             finally:
                 self.conditional.notify_all()
                 self.conditional.release()
@@ -229,7 +229,7 @@ class WSClient(websocket.WebSocketApp):
                     lambda: self.connected
                 )
         except KeyboardInterrupt:
-            self._err_handler(self, "Interrupted while establishing the connection")
+            self._err_handler("Interrupted while establishing the connection")
 
 
     def _wait_for_server_nonce(self):
@@ -238,7 +238,7 @@ class WSClient(websocket.WebSocketApp):
                     lambda: self.server_nonce is not None
                 )
         except KeyboardInterrupt:
-            self._err_handler(self, "Interrupted while waiting for server nonce")
+            self._err_handler("Interrupted while waiting for server nonce")
 
 
     def _wait_for_auth_response(self):
@@ -247,7 +247,7 @@ class WSClient(websocket.WebSocketApp):
                     lambda: self.auth_complete is True
                 )
         except KeyboardInterrupt:
-            self._err_handler(self, "Interrupted while waiting for authentication to complete")
+            self._err_handler("Interrupted while waiting for authentication to complete")
 
 
     def _compute_ecdsa_signature(self):
@@ -278,7 +278,7 @@ class WSClient(websocket.WebSocketApp):
             return r, s
 
         except ValueError:
-            self._err_handler(self, "Invalid signature data")
+            self._err_handler("Invalid signature data")
 
 
     def _send_signature(self, **sig_data):
@@ -290,14 +290,14 @@ class WSClient(websocket.WebSocketApp):
             return
 
         if self.user_id is None or self.cookie is None or self.passphrase is None:
-            self._err_handler(self, "Missing authentication data")
+            self._err_handler("Missing authentication data")
             return
 
         self._smart_connect()
 
         self._wait_for_server_nonce()
         if self.server_nonce is None:
-            self._err_handler(self, "Server nonce not received before timeout")
+            self._err_handler("Server nonce not received before timeout")
 
         else:
             signature = self._compute_ecdsa_signature()
@@ -313,9 +313,9 @@ class WSClient(websocket.WebSocketApp):
 
             self._wait_for_auth_response()
             if not self.auth_complete:
-                self._err_handler(self, "Unable to complete authentication")
+                self._err_handler("Unable to complete authentication")
             elif not self.auth_okay:
-                self._err_handler(self, "Authentication failed")
+                self._err_handler("Authentication failed")
 
 
     def GetBalances(self, **data):
