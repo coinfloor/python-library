@@ -46,12 +46,12 @@ def test_drive(args):
 
     coinfloor.WatchOrders(
             base    = Assets["XBT"],
-            counter = Assets["USD"],
+            counter = Assets["GBP"],
             watch   = True
         )
     coinfloor.WatchTicker(
             base    = Assets["XBT"],
-            counter = Assets["USD"],
+            counter = Assets["GBP"],
             watch   = True
         )
 
